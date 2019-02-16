@@ -12,13 +12,18 @@ task :jmx_article_likes_load, [:domain, :threads, :concurrency, :sleep] => :envi
   require_relative '../ruby_jmeter/dsl/view_results_in_5_graph'
   require_relative '../ruby_jmeter/dsl/view_results_in_6_graph'
 
+
+  `rails log:clear`
+  FileUtils.mkdir_p('tmp/performance')
+  `DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=#{Rails.env} rails database:prepare_testing_db`
+
   args.with_defaults(
                       domain: '127.0.0.1:3002',
                       threads: 64,
                       loads_entries: 100,
                       sleep: 1 )
 
-  build = "pg_article_like_puma_16_1_th#{args[:threads]}_concur#{args[:concurrency]}"
+  build = "pg_article_like_puma_8_8_th#{args[:threads]}_concur#{args[:loads_entries]}"
   load_multiplicator = 10
   time_multiplicator = 10
 
@@ -59,7 +64,7 @@ task :jmx_article_likes_load, [:domain, :threads, :concurrency, :sleep] => :envi
         transaction name: "GET#index#{n}" do
 
           article_from_id = rand(Article.minimum(:id)-1..Article.maximum(:id)-1)
-          article_till_id = rand(article_from_id..Article.maximum(:id)-1)
+          article_till_id = article_from_id + 100
 
           header([
                      { name: 'Content-Type', value: 'application/json' },

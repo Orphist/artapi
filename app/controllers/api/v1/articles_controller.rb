@@ -1,4 +1,5 @@
 class Api::V1::ArticlesController < ::Api::BaseController
+  before_action :ensure_requested_article_exists, only: [:like, :dislike]
 
   def index
     articles = Article.all
@@ -11,22 +12,17 @@ class Api::V1::ArticlesController < ::Api::BaseController
   end
 
   def like
-    article_counters_service.like_increment
+    ::ArticleCountersLikeIncJob.perform_later(permited_params[:id])
   end
 
   def dislike
-    article_counters_service.dislike_increment
+    ::ArticleCountersDislikeIncJob.perform_later(permited_params[:id])
   end
 
   private
 
   def permited_params
     params.permit(:id, :limit)
-  end
-
-  def article_counters_service
-    ensure_requested_article_exists
-    ::ArticleCountersBuffer.new(article_id: permited_params[:id])
   end
 
   def ensure_requested_article_exists

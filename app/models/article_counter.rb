@@ -1,15 +1,12 @@
 class ArticleCounter < ApplicationRecord
   MAX_BUFFER_SIZE ||= 200
-  MAX_BUFFER_AGE  ||= 3.seconds
+  MAX_BUFFER_AGE  ||= 10.seconds
 
   include Wisper::Publisher
-
-  belongs_to :article
 
   after_create_commit :check_buffer
 
   def check_buffer
-    # p "flush_buffer? #{flush_buffer?} [size=#{buffer_oversize?} time=#{buffer_overtime?}]"
     deliver_article_counters_msg if flush_buffer?
   end
 

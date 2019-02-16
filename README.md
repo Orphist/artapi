@@ -8,10 +8,19 @@ next steps to gain performance:
 * take bigger server ;)
 
 how to test w/JMeter:
-* RAILS_ENV=production rails db:seed
 * brew install jmeter --with-plugins
-* rake jmx_article_likes_load
+* RAILS_ENV=production rake jmx_article_likes_load
  
+ 
+UPDATE:
+* bugfixes: 
+    - AR models assocs - removed 
+    - article like/dislike counters update  
+* ruby upto 2.6.0
+* replace AR queries with bulk/raw SQL
+* articles#like #dislike now works async via sucker_punch
+
+~500 requests/sec
 
 This README would normally document whatever steps are necessary to get the
 application up and running.

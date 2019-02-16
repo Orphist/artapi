@@ -9,18 +9,37 @@ class ArticleCountersUpdater < Valuable
   private
 
   def counters_grouped_by_article_id
-    ArticleCounter.where('id <= ?', article_counter_last_id).
+    @counters_grouped_by_article_id ||= ArticleCounter.where('id <= ?', article_counter_last_id).
         select('article_id, SUM("like") likes_count, SUM("dislike") dislikes_count').
         group(:article_id)
   end
 
   def process_buffer!
-    counters_grouped_by_article_id.each do |rel|
-      Article.find(rel.article_id).update(likes_counter: rel.likes_count, dislikes_counter: rel.dislikes_count)
+    return if counters_grouped_by_article_id.blank?
+    stnmt = <<~SQL
+      UPDATE articles
+      SET likes_counter    = likes_counter    + articles_update.likes_count,
+          dislikes_counter = dislikes_counter + articles_update.dislikes_count
+      FROM
+      (
+            SELECT
+                UNNEST(ARRAY[#{counters_grouped_by_article_id.map(&:article_id).join(',')}    ]) article_id,
+                UNNEST(ARRAY[#{counters_grouped_by_article_id.map(&:likes_count).join(',')}   ]) likes_count,
+                UNNEST(ARRAY[#{counters_grouped_by_article_id.map(&:dislikes_count).join(',')}]) dislikes_count
+      ) articles_update
+      WHERE articles.id = articles_update.article_id;
+    SQL
+    ActiveRecord::Base.connection_pool.with_connection do |connection|
+      connection.execute stnmt
     end
   end
 
   def clean_buffer!
-    ArticleCounter.where('id <= ?', article_counter_last_id).destroy_all
+    stnmt = <<~SQL
+      DELETE FROM article_counters WHERE id <= #{article_counter_last_id};
+    SQL
+    ActiveRecord::Base.connection_pool.with_connection do |connection|
+      connection.execute stnmt
+    end
   end
 end
