@@ -6,9 +6,14 @@ ruby '2.6.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.2'
 
+gem 'rack-api', require: "rack/api"
+gem 'activerecord-rack'
+gem 'rack-with_sequel'
+gem 'rack-console'
+
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
-# gem 'falcon', github: 'socketry/falcon' # puma replacement, nio4r needed
+gem 'falcon', github: 'socketry/falcon' # puma replacement, nio4r needed
 
 gem 'pg', '>= 0.18', '< 2.0'
 
