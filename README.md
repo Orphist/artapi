@@ -1,6 +1,6 @@
 # README
 
-![Arthur](http://www.gstatic.com/tv/thumb/tvbanners/184303/p184303_b_v8_ad.jpg)
+![Arthur](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1kr-oVaLJ1hiJRRZlFX5KZn14u-85rbMLTZulo38m-8vVI1G6)
 
 This README would normally document whatever steps are necessary to get the
 application up and running.
