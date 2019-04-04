@@ -1,5 +1,7 @@
 # README
 
+![Arthur](http://www.gstatic.com/tv/thumb/tvbanners/184303/p184303_b_v8_ad.jpg)
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
